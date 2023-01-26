@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  client:
+    build: ./client
+    image: kubecmt/yolo_client:1.0
+    container_name: clientcontainer
+    tty: true
+    ports:
+      - '3000:3000'
+    networks:
+      - yolonetwork
+    depends_on:
+      - backend
+  
+  backend:
+    build: ./backend
+    image: kubecmt/yolo_backend:1.0
+    container_name: backendcontainer
+    ports:
+      - '5000:5000'
+    networks:
+      - yolonetwork
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - yolomy:/data/db
+    networks:
+      - yolonetwork
+
+volumes:
+  yolomy:    
+
+networks:
+  yolonetwork:
+    driver: bridge
